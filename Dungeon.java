@@ -100,9 +100,11 @@ class Dungeon {
             System.out.println("3. Elemental Attack");
             System.out.println("4. Use Item");
             System.out.println("5. Flee");
+            System.out.print("Select (1/2/3/4/5): ");
 
             Scanner scanner = new Scanner(System.in);
             int choice = scanner.nextInt();
+            System.out.println();
             switch (choice) {
                 case 1:
                     playerMonster.basicAttack(enemyMonster);
@@ -131,16 +133,44 @@ class Dungeon {
                     break;
             }
 
+            System.out.println(enemyMonster.getName() + " HP: " + enemyMonster.getHp());
+            System.out.println();
+
             if (enemyMonster.getHp() <= 0) {
                 System.out.println("You defeated " + enemyMonster.getName() + "!");
+
+                int lvlDif = enemyMonster.getLevel() - playerMonster.getLevel();
+                if (lvlDif <= 0) lvlDif = 0;
+
+                playerMonster.gainXP(4 + lvlDif); // Gain XP after defeating the enemy
+                System.out.println(playerMonster.getName() + " XP +" + (4 + lvlDif));
                 System.out.println();
-                playerMonster.gainXP(4); // Gain XP after defeating the enemy
                 break;
             }
 
             System.out.println();
             System.out.println("Enemy's turn:");
-            enemyMonster.basicAttack(playerMonster);
+            int enemyAtt = random.nextInt(3) + 1;
+            
+            switch (enemyAtt) {
+                case 1:
+                    enemyMonster.basicAttack(playerMonster);
+                    break;
+            
+                case 2:
+                enemyMonster.specialAttack(playerMonster);
+                break;
+        
+                case 3:
+                enemyMonster.elementalAttack(playerMonster);
+                break;
+        
+                default:
+                    break;
+            }
+
+            System.out.println(playerMonster.getName() + " HP: " + playerMonster.getHp());
+            System.out.println();
 
             if (playerMonster.getHp() <= 0) {
                 System.out.println(enemyMonster.getName() + " defeated you!");

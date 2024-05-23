@@ -9,8 +9,12 @@ public class MonsterAngin extends Monster {
         super(name, "Angin", "Tanah", level);  // Wind is strong against Fire
     }
 
-    MonsterAngin(String name, int level, int hp, int ep) {
-        super(name, level, hp, ep, "Angin", "Tanah");
+    MonsterAngin(String name, int level, int hp, int ep, boolean changed) {
+        super(name, level, hp, ep, "Angin", "Tanah", changed);
+    }
+
+    MonsterAngin(Monster a) {
+        super(a.getName(), a.getLevel(), a.getHp(), a.getEp(), "Angin", "Tanah", true);
     }
 
     @Override

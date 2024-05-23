@@ -6,13 +6,12 @@ import java.io.*;
 class Player {
     private ArrayList<Monster> monsters;
     private Dungeon dungeon;
-    private Scanner scanner;
     private String nama;
+    Scanner scanner = new Scanner(System.in);
 
     public Player(String nama) {
         this.nama = nama;
         this.monsters = new ArrayList<>();
-        this.scanner = new Scanner(System.in);
 
         monsters.add(new MonsterApi("Charmander"));
         monsters.add(new MonsterAir("Squirtle"));
@@ -39,23 +38,49 @@ class Player {
 
         System.out.println("Choose monsters to bring to the dungeon:");
         ArrayList<Monster> selectedMonsters = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            System.out.println("Select monster " + (i + 1) + ":");
-            for (int j = 0; j < monsters.size(); j++) {
-                System.out.println((j + 1) + ". " + monsters.get(j).getName() + " (Level: " +
-                        monsters.get(j).getLevel() + ", HP: " + monsters.get(j).getHp() + ")");
-            }
+        ArrayList<Monster> avaiMonster = new ArrayList<>(monsters);
 
-            System.out.print("Select: ");
-            int choice = scanner.nextInt();
-            if (choice < 1 || choice > monsters.size()) {
-                System.out.println("Invalid choice. Please choose again.");
-                i--;
-            } else {
-                selectedMonsters.add(monsters.get(choice - 1));
+        while (selectedMonsters.size() < 3) {
+            System.out.println("Select Monster:");
+            int count = 1;
+            for (Monster m : avaiMonster) {
+                System.out.println(count++ + ". " + m.getName() + " - " + m.getElement() + " (lvl. " + m.getLevel() + ")");
             }
-            System.out.println();
+            System.out.print("Select Monster: ");
+            int slc = scanner.nextInt();
+            if (slc > 0 && slc <= avaiMonster.size()) {
+                Monster m = avaiMonster.get(slc-1);
+                selectedMonsters.add(m);
+                avaiMonster.remove(slc-1);
+
+                System.out.println();
+                System.out.println("Selected " + m.getName() + " - " + m.getElement() + " (lvl. " + m.getLevel() + ")");
+                System.out.print("Select again (Y/n)? ");
+
+                String sel = scanner.next();
+                System.out.println();
+                if (sel.equalsIgnoreCase("n")) break;
+            } else System.out.println("Input invalid!");
         }
+        System.out.println();
+
+        // for (int i = 0; i < 3; i++) {
+        //     System.out.println("Select monster " + (i + 1) + ":");
+        //     for (int j = 0; j < monsters.size(); j++) {
+        //         System.out.println((j + 1) + ". " + monsters.get(j).getName() + " (Level: " +
+        //                 monsters.get(j).getLevel() + ", HP: " + monsters.get(j).getHp() + ")");
+        //     }
+
+        //     System.out.print("Select: ");
+        //     int choice = scanner.nextInt();
+        //     if (choice < 1 || choice > monsters.size()) {
+        //         System.out.println("Invalid choice. Please choose again.");
+        //         i--;
+        //     } else {
+        //         selectedMonsters.add(monsters.get(choice - 1));
+        //     }
+        //     System.out.println();
+        // }
 
         System.out.println("Exploring the dungeon...");
 
@@ -66,13 +91,13 @@ class Player {
             ArrayList<Monster> monsterList = dungeon.getMonster();
             Monster enemyMonster = monsterList.get(ran.nextInt(monsterList.size()));
             System.out.println("ENEMY FOUND!!!");
-            System.out.println(enemyMonster.getName() + " (" + enemyMonster.getElement() + ") " + "lvl." + enemyMonster.getLevel());
+            System.out.println(enemyMonster.getName() + " - " + enemyMonster.getElement() + " (lvl. " + enemyMonster.getLevel() + ")");
             System.out.println();
 
             System.out.println("Your Monster:");
             int count = 1;
             for (Monster a : selectedMonsters) {
-                System.out.println(count++ + ". " + a.getName() + " (lvl. " + a.getLevel() + ")");
+                System.out.println(count++ + ". " + a.getName() + " - " + a.getElement() + " (lvl. " + a.getLevel() + ")");
             }
             int select = 0;
 
@@ -115,22 +140,32 @@ class Player {
 
     public void upgradeMonster() {
         System.out.println("Select a monster to upgrade:");
-        for (int i = 0; i < monsters.size(); i++) {
-            Monster m = monsters.get(i);
-            System.out.println((i + 1) + ". " + m.getName() + " (Level: " + m.getLevel() + ", XP: " + m.getEp() + ")");
+        int count = 1;
+        for (Monster m : monsters) {
+            System.out.println(count++ + ". " + m.getName());
+            System.out.println("- Element: " + m.getElement());
+            System.out.println("- Strength VS: " + m.getStrengthAgainst());
+            System.out.println("- HP: " + m.getHp());
+            System.out.println("- XP: " + m.getEp());
+            System.out.println("- Changed: " + m.getChanged());
+            System.out.println();
         }
+
+        System.out.print("Select Monster: ");
 
         int choice = scanner.nextInt();
+        System.out.println();
         if (choice < 1 || choice > monsters.size()) {
             System.out.println("Invalid choice. Please choose again.");
-            return;
-        }
-
-        Monster selectedMonster = monsters.get(choice - 1);
-        if (selectedMonster.canLevelUp()) {
-            selectedMonster.levelUp();
+            
         } else {
-            System.out.println(selectedMonster.getName() + " does not have enough XP to level up.");
+            Monster selectedMonster = monsters.get(choice - 1);
+            if (selectedMonster.canLevelUp()) {
+                selectedMonster.levelUp();
+            } else {
+                System.out.println(selectedMonster.getName() + " does not have enough XP to level up.");
+                System.out.println();
+            }
         }
     }
 
@@ -138,7 +173,7 @@ class Player {
         try {
           FileWriter myWriter = new FileWriter(nama + ".txt");
           for (Monster m : monsters) {
-            String mons = m.getName() + " " + m.getLevel() + " " + m.getHp() + " " + m.getEp() + " " + m.getElement() + " " + m.getStrengthAgainst();
+            String mons = m.getName() + " " + m.getLevel() + " " + m.getHp() + " " + m.getEp() + " " + m.getElement() + " " + m.getStrengthAgainst() + " " + m.getChanged();
             myWriter.write(mons + "\n");
           }
           myWriter.close();
@@ -187,6 +222,96 @@ class Player {
                 System.out.println("An error occurred.");
                 e.printStackTrace();
             }
+        }
+    }
+
+    public void evolution () {
+        System.out.println("Select Monster to evolve");
+        int count = 1;
+        for (Monster m : monsters) {
+            if (m.getChanged()) continue;
+            System.out.println(count++ + ". " + m.getName() + " - " + m.getElement() + " (" + m.getLevel() + ")");
+        }
+
+        if (count == 1) {
+            System.out.println("No monster can evolve!");
+        } else {
+            System.out.print("Choose: ");
+            int choo = scanner.nextInt();
+            System.out.println();
+            Monster selected = monsters.get(choo-1);
+
+            String e1 = "";
+            String e2 = "";
+            
+            switch (selected.getElement()) {
+                case "Air":
+                    e1 = "Angin";
+                    e2 = "Es";
+                    break;
+            
+                case "Es":
+                    e1 = "Air";
+                    e2 = "Tanah";
+                    break;
+        
+                case "Tanah":
+                    e1 = "Es";
+                    e2 = "Api";
+                    break;
+        
+                case "Api":
+                    e1 = "Tanah";
+                    e2 = "Angin";
+                    break;
+        
+                case "Angin":
+                    e1 = "Api";
+                    e2 = "Air";
+                    break;
+        
+                default:
+                    break;
+            }
+            
+            System.out.println("Evolve to:");
+            System.out.println("1. " + e1);
+            System.out.println("2. " + e2);
+            System.out.print("Choose: ");
+            int cho = scanner.nextInt();
+            System.out.println();
+
+            String selected2 = cho == 1? e1: e2;
+            
+            switch (selected2) {
+                case "Air":
+                    monsters.add(choo-1, new MonsterAir(selected));
+                    monsters.remove(choo);
+                    break;
+            
+                case "Es":
+                    monsters.add(choo-1, new MonsterEs(selected));
+                    monsters.remove(choo);
+                    break;
+        
+                case "Tanah":
+                    monsters.add(choo-1, new MonsterTanah(selected));
+                    monsters.remove(choo);
+                    break;
+        
+                case "Api":
+                    monsters.add(choo-1, new MonsterApi(selected));
+                    monsters.remove(choo);
+                    break;
+        
+                case "Angin":
+                    monsters.add(choo-1, new MonsterAngin(selected));
+                    monsters.remove(choo);
+                    break;
+            }
+
+            System.out.println(monsters.get(choo-1).getName() + "'s element chaned to " + monsters.get(choo-1).getElement());
+            System.out.println();
         }
     }
 

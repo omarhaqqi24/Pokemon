@@ -7,6 +7,7 @@ abstract class Monster {
     private int ep;
     private String element;
     private String strengthAgainst;
+    private boolean changed;
 
     public Monster(String name, String element, String strengthAgainst) {
         this.name = name;
@@ -15,6 +16,7 @@ abstract class Monster {
         this.strengthAgainst = strengthAgainst;
         this.setHp();
         this.ep = 0;
+        this.changed = false;
     }
 
     public Monster(String name, String element, String strengthAgainst, int level) {
@@ -26,13 +28,18 @@ abstract class Monster {
         this.ep = 0;
     }
 
-    public Monster(String name, int level, int hp, int ep, String element, String strengthAgainst) {
+    public Monster(String name, int level, int hp, int ep, String element, String strengthAgainst, boolean changed) {
         this.name = name;
         this.level = level;
         this.hp = hp;
         this.ep = ep;
         this.element = element;
         this.strengthAgainst = strengthAgainst;
+        this.changed = changed;
+    }
+
+    public boolean getChanged() {
+        return changed;
     }
 
     public String getName() {
@@ -80,24 +87,16 @@ abstract class Monster {
         checkLevelUp();
     }
 
-    private void checkLevelUp() {
-        while (this.ep >= 100) {
-            this.ep -= 100;
-            this.level++;
-            this.hp = this.level * 10; // Assume HP increases with level
-            System.out.println(this.name + " has leveled up to level " + this.level + "!");
-        }
-    }
-
     public boolean canLevelUp() {
-        return this.ep >= 100;
+        return this.ep >= 15;
     }
 
     public void levelUp() {
         if (canLevelUp()) {
-            this.ep -= 100;
+            this.ep -= 15;
             this.level++;
             setHp();
+            this.changed = false;
             System.out.println(this.name + " has leveled up to level " + this.level + "!");
         }
     }

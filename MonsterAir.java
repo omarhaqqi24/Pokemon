@@ -9,8 +9,12 @@ public class MonsterAir extends Monster {
         super(name, "Air", "Api", level);  // Water is strong against Fire
     }
 
-    MonsterAir(String name, int level, int hp, int ep) {
-        super(name, level, hp, ep, "Air", "Api");
+    MonsterAir(String name, int level, int hp, int ep, boolean changed) {
+        super(name, level, hp, ep, "Air", "Api", changed);
+    }
+
+    MonsterAir(Monster a) {
+        super(a.getName(), a.getLevel(), a.getHp(), a.getEp(), "Air", "Api", true);
     }
 
     @Override

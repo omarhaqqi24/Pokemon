@@ -9,8 +9,12 @@ public class MonsterApi extends Monster {
         super (name, "Api", "Es", level);
     }
 
-    MonsterApi(String name, int level, int hp, int ep) {
-        super(name, level, hp, ep, "Api", "Es");
+    MonsterApi(String name, int level, int hp, int ep, boolean changed) {
+        super(name, level, hp, ep, "Api", "Es", changed);
+    }
+
+    MonsterApi(Monster a) {
+        super(a.getName(), a.getLevel(), a.getHp(), a.getEp(), "Api", "Es", true);
     }
 
     @Override

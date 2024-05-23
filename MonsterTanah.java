@@ -9,8 +9,12 @@ public class MonsterTanah extends Monster {
         super(name, "Tanah", "Air", level);  // Ground is strong against Electric
     }
 
-    MonsterTanah(String name, int level, int hp, int ep) {
-        super(name, level, hp, ep, "Tanah", "Air");
+    MonsterTanah(String name, int level, int hp, int ep, boolean changed) {
+        super(name, level, hp, ep, "Tanah", "Air", changed);
+    }
+
+    MonsterTanah(Monster a) {
+        super(a.getName(), a.getLevel(), a.getHp(), a.getEp(), "Tanah", "Air", true);
     }
 
     @Override

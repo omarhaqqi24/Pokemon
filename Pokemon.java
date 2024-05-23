@@ -7,100 +7,102 @@ public class Pokemon {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("1. New Game");
-        System.out.println("2. Load Game");
-        System.out.print("Select (1/2): ");
-        String plh = scanner.nextLine();
-        Player player;
+        boolean selected = false;
+        Player player = null;
 
-        while (true) {
+        while (!selected) {
+            System.out.println("1. New Game");
+            System.out.println("2. Load Game");
+            System.out.print("Select (1/2): ");
+            String plh = scanner.nextLine();
+            
             if (plh.equals("1")) {
                 // Example usage of scanner
                 System.out.print("Enter your name: ");
                 String playerName = scanner.nextLine();
                 System.out.println("Hello, " + playerName + "! Welcome to the game.");
                 player = new Player(playerName);
-                break;
+                selected = true;
             } else {
-                boolean repeat = false;
                 ArrayList<String> users = new ArrayList<>();
                 int count = 1;
                 try {
-                    if (repeat) {
-                        continue;
+                    File myObj = new File("user.txt");
+                    Scanner myReader = new Scanner(myObj);
+
+                    System.out.println("Select an user:");
+                    if (!myReader.hasNext()) {
+                        System.out.println("Save data not found!");
+                        System.out.println();
                     } else {
-                        File myObj = new File("user.txt");
-                        Scanner myReader = new Scanner(myObj);
-        
-                        System.out.println("Select an user:");
-                        if (!myReader.hasNext()) {
-                            System.out.println("Save data not found");
-                            repeat = true;
-                            continue;
-                        } else {
-                            while (myReader.hasNextLine()) {
-                            String data = myReader.nextLine();
-                            users.add(data);
-                            System.out.println(count++ + ". "  + data);
-                            }
+                        while (myReader.hasNextLine()) {
+                        String data = myReader.nextLine();
+                        users.add(data);
+                        System.out.println(count++ + ". "  + data);
                         }
-    
-                        myReader.close();
+                        System.out.print("Select: ");
+                        int plh2 = scanner.nextInt();
+                        ArrayList<Monster> mons = new ArrayList<>();
+
+                        try {
+                            File myObj2 = new File(users.get(plh2-1) + ".txt");
+                            Scanner myReader2 = new Scanner(myObj2);
+                            while (myReader2.hasNextLine()) {
+                                String data = myReader2.nextLine();
+                                String[] monsData = data.split(" ");
+                                String nm = monsData[0];
+                                int lv = Integer.parseInt(monsData[1]);
+                                int hp = Integer.parseInt(monsData[2]);
+                                int ep = Integer.parseInt(monsData[3]);
+                                String el = monsData[4];
+                                boolean ch = monsData[6] == "true"? true: false;
+                                
+                                switch (el) {
+                                case "Air":
+                                    mons.add(new MonsterAir(nm, lv, hp, ep, ch));
+                                    break;
+                                
+                                case "Angin":
+                                    mons.add(new MonsterAngin(nm, lv, hp, ep, ch));
+                                    break;
+                            
+                                case "Api":
+                                    mons.add(new MonsterApi(nm, lv, hp, ep, ch));
+                                    break;
+                            
+                                case "Es":
+                                    mons.add(new MonsterEs(nm, lv, hp, ep, ch));
+                                    break;
+                            
+                                case "Tanah":
+                                    mons.add(new MonsterTanah(nm, lv, hp, ep, ch));
+                                    break;
+                                }
+                            }
+                            myReader.close();
+                        } catch (FileNotFoundException e) {
+                            System.out.println("An error occurred.");
+                            e.printStackTrace();
+                        }
+
+                        player = new Player(users.get(plh2-1), mons);
+                        selected = true;
                     }
+
+                    myReader.close();
                 } catch (FileNotFoundException e) {
                     System.out.println("Save data not found");
                 }
-    
-                System.out.print("Select: ");
-                int plh2 = scanner.nextInt();
-                ArrayList<Monster> mons = new ArrayList<>();
-    
-                try {
-                    File myObj = new File(users.get(plh2-1) + ".txt");
-                    Scanner myReader = new Scanner(myObj);
-                    while (myReader.hasNextLine()) {
-                      String data = myReader.nextLine();
-                      String[] monsData = data.split(" ");
-                      String nm = monsData[0];
-                      int lv = Integer.parseInt(monsData[1]);
-                      int hp = Integer.parseInt(monsData[2]);
-                      int ep = Integer.parseInt(monsData[3]);
-                      String el = monsData[4];
-                      String sa = monsData[5];
-                      
-                      switch (el) {
-                        case "Air":
-                            mons.add(new MonsterAir(nm, lv, hp, ep));
-                            break;
-                      
-                        case "Angin":
-                        mons.add(new MonsterAngin(nm, lv, hp, ep));
-                        break;
-                    
-                        case "Api":
-                        mons.add(new MonsterApi(nm, lv, hp, ep));
-                        break;
-                    
-                        case "Es":
-                        mons.add(new MonsterEs(nm, lv, hp, ep));
-                        break;
-                    
-                        case "Tanah":
-                        mons.add(new MonsterTanah(nm, lv, hp, ep));
-                        break;
-                      }
-                    }
-                    myReader.close();
-                  } catch (FileNotFoundException e) {
-                    System.out.println("An error occurred.");
-                    e.printStackTrace();
-                  }
-    
-                player = new Player(users.get(plh2-1), mons);
-                break;
+
+                
             }
-    
         }
+        System.out.println();
+
+        for (Monster m : player.getMonsters()) {
+            m.setHp();
+        }
+    
         // Example game loop
         boolean running = true;
         while (running) {
@@ -110,6 +112,7 @@ public class Pokemon {
             System.out.println("3. Upgrade Monster");
             System.out.println("4. Monster Evolution");
             System.out.println("5. Quit");
+            System.out.print("Select (1/2/3/4/5): ");
 
             int choice = scanner.nextInt();
             System.out.println();
@@ -123,6 +126,9 @@ public class Pokemon {
                     break;
                 case 3:
                     player.upgradeMonster();
+                    break;
+                case 4:
+                    player.evolution();
                     break;
                 case 5:
                     running = false;
