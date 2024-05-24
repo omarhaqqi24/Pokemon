@@ -1,5 +1,5 @@
-package MatkulPBO.Pukimon;
+package Pokemon;
 
 interface Usable {
-    void use();
+    void use(Monster pl, Monster en);
 }

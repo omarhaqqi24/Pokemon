@@ -1,6 +1,7 @@
-package Pukimon;
+package Pokemon;
 
 import java.util.*;
+
 import java.io.*;
 
 public class Pokemon {
@@ -27,7 +28,7 @@ public class Pokemon {
                 ArrayList<String> users = new ArrayList<>();
                 int count = 1;
                 try {
-                    File myObj = new File("user.txt");
+                    File myObj = new File("save/user.txt");
                     Scanner myReader = new Scanner(myObj);
 
                     System.out.println("Select an user:");
@@ -45,7 +46,7 @@ public class Pokemon {
                         ArrayList<Monster> mons = new ArrayList<>();
 
                         try {
-                            File myObj2 = new File(users.get(plh2-1) + ".txt");
+                            File myObj2 = new File("save/" + users.get(plh2-1) + ".txt");
                             Scanner myReader2 = new Scanner(myObj2);
                             while (myReader2.hasNextLine()) {
                                 String data = myReader2.nextLine();
@@ -55,7 +56,7 @@ public class Pokemon {
                                 int hp = Integer.parseInt(monsData[2]);
                                 int ep = Integer.parseInt(monsData[3]);
                                 String el = monsData[4];
-                                boolean ch = monsData[6] == "true"? true: false;
+                                boolean ch = monsData[6].equals("true")? true: false;
                                 
                                 switch (el) {
                                 case "Air":
@@ -98,14 +99,17 @@ public class Pokemon {
             }
         }
         System.out.println();
-
-        for (Monster m : player.getMonsters()) {
-            m.setHp();
-        }
     
         // Example game loop
         boolean running = true;
         while (running) {
+
+            for (Monster m : player.getMonsters()) {
+                m.setHp();
+                m.hasHeal = true;
+                m.hasVampire = true;
+            }
+
             System.out.println("What do you want to do?");
             System.out.println("1. Explore dungeon");
             System.out.println("2. Save progress");

@@ -1,4 +1,4 @@
-package Pukimon;
+package Pokemon;
 
 import java.util.*;
 class Dungeon {
@@ -87,6 +87,7 @@ class Dungeon {
     public void startBattle(Monster playerMonster, Monster enemyMonster) {
         Random random = new Random();
 
+        enemyMonster.setHp();
         System.out.println("A battle has started!");
         System.out.println("Your " + playerMonster.getName() + " (Level: " + playerMonster.getLevel() +
                 ", HP: " + playerMonster.getHp() + ") vs " + enemyMonster.getName() + " (Level: " +
@@ -116,9 +117,23 @@ class Dungeon {
                     playerMonster.elementalAttack(enemyMonster);
                     break;
                 case 4:
-                    System.out.println("Enter (heal): ");
-                    String item = scanner.next();
-                    playerMonster.useItem(item);
+                    System.out.println("Item available: ");
+                    if (playerMonster.hasHeal) System.out.println("- Heal");
+                    if (playerMonster.hasVampire) System.out.println("- Vampire");
+                    System.out.print("Select: ");
+                    String itm = scanner.next();
+                    System.out.println();
+                    
+                    if (itm.equalsIgnoreCase("Heal")) {
+                        Heal heal = new Heal();
+                        heal.use(playerMonster, enemyMonster);
+                        playerMonster.hasHeal = false;
+                    }
+                    if (itm.equalsIgnoreCase("Vampire")) {
+                        Vampire vamp = new Vampire();
+                        vamp.use(playerMonster, enemyMonster);
+                        playerMonster.hasVampire = false;
+                    }
                     break;
                 case 5:
                     if (playerMonster.flee()) {
@@ -133,7 +148,7 @@ class Dungeon {
                     break;
             }
 
-            System.out.println(enemyMonster.getName() + " HP: " + enemyMonster.getHp());
+            System.out.println(enemyMonster.getName() + " HP: " + Math.max(0, enemyMonster.getHp()));
             System.out.println();
 
             if (enemyMonster.getHp() <= 0) {
@@ -145,6 +160,7 @@ class Dungeon {
                 playerMonster.gainXP(4 + lvlDif); // Gain XP after defeating the enemy
                 System.out.println(playerMonster.getName() + " XP +" + (4 + lvlDif));
                 System.out.println();
+                generateMonsters();
                 break;
             }
 
@@ -169,11 +185,12 @@ class Dungeon {
                     break;
             }
 
-            System.out.println(playerMonster.getName() + " HP: " + playerMonster.getHp());
+            System.out.println(playerMonster.getName() + " HP: " + Math.max( 0, playerMonster.getHp()));
             System.out.println();
 
             if (playerMonster.getHp() <= 0) {
                 System.out.println(enemyMonster.getName() + " defeated you!");
+                generateMonsters();
                 break;
             }
             System.out.println();

@@ -1,4 +1,4 @@
-package Pukimon;
+package Pokemon;
 
 public class MonsterTanah extends Monster {
     MonsterTanah(String name) {
@@ -40,7 +40,7 @@ public class MonsterTanah extends Monster {
 
         if (enemyElement.equals(getStrengthAgainst())) {
             System.out.println("It's super effective!");
-            int damage = getLevel() * 3;
+            int damage = getLevel() * 4;
             enemy.setHp(enemy.getHp() - damage);
             System.out.println(enemy.getName() + " takes " + damage + " damage.");
         } else {

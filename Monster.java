@@ -1,4 +1,4 @@
-package Pukimon;
+package Pokemon;
 
 abstract class Monster {
     private String name;
@@ -8,6 +8,8 @@ abstract class Monster {
     private String element;
     private String strengthAgainst;
     private boolean changed;
+    public boolean hasHeal = true;
+    public boolean hasVampire = true;
 
     public Monster(String name, String element, String strengthAgainst) {
         this.name = name;
@@ -84,7 +86,6 @@ abstract class Monster {
 
     public void gainXP(int xp) {
         this.ep += xp;
-        checkLevelUp();
     }
 
     public boolean canLevelUp() {

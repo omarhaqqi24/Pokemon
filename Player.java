@@ -1,4 +1,4 @@
-package Pukimon;
+package Pokemon;
 
 import java.util.*;
 import java.io.*;
@@ -113,6 +113,7 @@ class Player {
             Monster monster = selectedMonsters.get(select-1);
 
             dungeon.startBattle(monster, enemyMonster);
+            
             if (monster.getHp() > 0) {
                 System.out.println(monster.getName() + " survived the dungeon!");
                 // Gain XP is already handled in the dungeon battle
@@ -142,7 +143,7 @@ class Player {
         System.out.println("Select a monster to upgrade:");
         int count = 1;
         for (Monster m : monsters) {
-            System.out.println(count++ + ". " + m.getName());
+            System.out.println(count++ + ". " + m.getName() + " (lvl." + m.getLevel() + ")");
             System.out.println("- Element: " + m.getElement());
             System.out.println("- Strength VS: " + m.getStrengthAgainst());
             System.out.println("- HP: " + m.getHp());
@@ -171,13 +172,13 @@ class Player {
 
     public void saveProgress() {
         try {
-          FileWriter myWriter = new FileWriter(nama + ".txt");
+          FileWriter myWriter = new FileWriter("save/" + nama + ".txt");
           for (Monster m : monsters) {
             String mons = m.getName() + " " + m.getLevel() + " " + m.getHp() + " " + m.getEp() + " " + m.getElement() + " " + m.getStrengthAgainst() + " " + m.getChanged();
             myWriter.write(mons + "\n");
           }
           myWriter.close();
-          System.out.println("Successfully wrote to the file.");
+          System.out.println("Your progress saved");
         } catch (IOException e) {
           System.out.println("An error occurred.");
           e.printStackTrace();
@@ -186,7 +187,7 @@ class Player {
         boolean found = false;
 
         try {
-            File myObj = new File("user.txt");
+            File myObj = new File("save/user.txt");
             Scanner myReader = new Scanner(myObj);
             while (myReader.hasNextLine()) {
               String data = myReader.nextLine();
@@ -201,7 +202,7 @@ class Player {
         if (!found) {
             ArrayList<String> users = new ArrayList<>();
             try {
-                File myObj = new File("user.txt");
+                File myObj = new File("save/user.txt");
                 Scanner myReader = new Scanner(myObj);
                 while (myReader.hasNextLine()) {
                     String data = myReader.nextLine();
@@ -214,7 +215,7 @@ class Player {
             }
             
             try {
-                FileWriter myWriter = new FileWriter("user.txt");
+                FileWriter myWriter = new FileWriter("save/user.txt");
                 for (String n : users) myWriter.write(n + "\n");
                 myWriter.write(nama + "\n");
                 myWriter.close();
