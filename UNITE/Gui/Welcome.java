@@ -4,7 +4,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.*;
+import java.util.*;
+import java.util.ArrayList;
+import java.util.Scanner;
+
 import javax.sound.sampled.*;
 
 public class Welcome {
@@ -66,6 +72,8 @@ public class Welcome {
         loadButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                Scanner scanner = new Scanner(System.in);
+
                 InputStream fontStream = null;
                 Font retro = null;
                 try {
@@ -93,19 +101,181 @@ public class Welcome {
                 // Membuat panel untuk frame baru
                 JPanel loadPanel = new JPanel();
                 loadPanel.setLayout(null); // Menggunakan null layout untuk absolute positioning
+
+                ArrayList<String> users = new ArrayList<>();
+
+                try {
+                    File myObj = new File("save/user.txt");
+                    Scanner myReader = new Scanner(myObj);
+
+                    System.out.println("Select an user:");
+                    if (!myReader.hasNext()) {
+                        // Membuat dan menambahkan JLabel dengan teks "Users"
+                        JLabel notFound = new JLabel("Data save");
+                        notFound.setFont(retro); // Menggunakan font retro
+                        notFound.setForeground(new Color(105, 52, 8)); // Menyesuaikan warna teks jika diperlukan
+                        notFound.setBounds(120, 190, 155, 30); // Menyesuaikan posisi dan ukuran Title
+                        loadPanel.add(notFound);
+                        
+                        JLabel notFound2 = new JLabel("not found");
+                        notFound2.setFont(retro); // Menggunakan font retro
+                        notFound2.setForeground(new Color(105, 52, 8)); // Menyesuaikan warna teks jika diperlukan
+                        notFound2.setBounds(121, 220, 155, 30); // Menyesuaikan posisi dan ukuran Title
+                        loadPanel.add(notFound2);
+        
+                        // Menambahkan gambar ke frame baru
+                        ImageIcon imageIcon1 = new ImageIcon("Aset/load_wood.png");
+                        JLabel image1Label = new JLabel(imageIcon1);
+                        image1Label.setBounds(0, 0, 390, 470); // Menyesuaikan ukuran label dengan ukuran gambar
+                        loadPanel.add(image1Label);
+                
+                        loadFrame.add(loadPanel);
+                        loadFrame.setVisible(true);
+                    } else {
+                        // Membuat dan menambahkan JLabel dengan teks "Users"
+                        JLabel usersTitle = new JLabel("Users");
+                        usersTitle.setFont(retro); // Menggunakan font retro
+                        usersTitle.setForeground(new Color(105, 52, 8)); // Menyesuaikan warna teks jika diperlukan
+                        usersTitle.setBounds(150, 30, 100, 30); // Menyesuaikan posisi dan ukuran Title
+                        loadPanel.add(usersTitle);
+
+                        LinkedList<JLabel> labels = new LinkedList<>();
+
+                        int y = 70;
+                        while (myReader.hasNextLine()) {
+                            String data = myReader.nextLine();
+                            users.add(data);
+
+                            // Membuat dan menambahkan JLabel dengan teks "Users"
+                            JLabel user1 = new JLabel(data);
+                            user1.setFont(retro); // Menggunakan font retro
+                            user1.setForeground(new Color(105, 52, 8)); // Menyesuaikan warna teks jika diperlukan
+                            user1.setOpaque(true);
+                            user1.setBackground(new Color(226, 196, 98));
+                            user1.setBounds(35, y += 35, 320, 30); // Menyesuaikan posisi dan ukuran Title
+
+                            // Menambahkan MouseListener ke label
+                            user1.addMouseListener(new MouseAdapter() {
+                                @Override
+                                public void mouseEntered(MouseEvent e) {
+                                    user1.setBackground(new Color(255, 232, 158)); // Warna saat di-hover
+                                }
+
+                                @Override
+                                public void mouseExited(MouseEvent e) {
+                                    user1.setBackground(new Color(226, 196, 98));
+                                }
+
+                                @Override
+                                public void mouseClicked(MouseEvent e) {
+                                    // Mengubah background label saat diklik
+                                    try {
+                                        File myObj2 = new File("save/" + data + ".txt");
+                                        Scanner myReader2 = new Scanner(myObj2);
+                                        ArrayList<Monster> mons = new ArrayList<>();
+
+                                        while (myReader2.hasNextLine()) {
+                                            String data = myReader2.nextLine();
+                                            String[] monsData = data.split(" ");
+                                            String nm = monsData[0];
+                                            int lv = Integer.parseInt(monsData[1]);
+                                            int hp = Integer.parseInt(monsData[2]);
+                                            int ep = Integer.parseInt(monsData[3]);
+                                            String el = monsData[4];
+                                            boolean ch = monsData[6].equals("true")? true: false;
+                                            
+                                            switch (el) {
+                                            case "Air":
+                                                mons.add(new MonsterAir(nm, lv, hp, ep, ch));
+                                                break;
+                                            
+                                            case "Angin":
+                                                mons.add(new MonsterAngin(nm, lv, hp, ep, ch));
+                                                break;
+                                        
+                                            case "Api":
+                                                mons.add(new MonsterApi(nm, lv, hp, ep, ch));
+                                                break;
+                                        
+                                            case "Es":
+                                                mons.add(new MonsterEs(nm, lv, hp, ep, ch));
+                                                break;
+                                        
+                                            case "Tanah":
+                                                mons.add(new MonsterTanah(nm, lv, hp, ep, ch));
+                                                break;
+                                            }
+                                        }
+                                        
+                                        myReader.close();
+            
+                                        Player player = new Player(data, mons);
+                                        frame.dispose();
+                                        loadFrame.dispose();
+                                        SwingUtilities.invokeLater(() -> {
+                                            new Home(player);
+                                        });
+                                    } catch (FileNotFoundException er) {
+                                        System.out.println("An error occurred.");
+                                        er.printStackTrace();
+                                    }
+                                }
+                            });
+
+                            labels.add(user1);
+                        }
+
+                        for (JLabel lbl : labels) {
+                            loadPanel.add(lbl, Integer.valueOf(1));
+                        }
+        
+                        // Menambahkan gambar ke frame baru
+                        ImageIcon imageIcon1 = new ImageIcon("Aset/load_wood.png");
+                        JLabel image1Label = new JLabel(imageIcon1);
+                        image1Label.setBounds(0, 0, 390, 470); // Menyesuaikan ukuran label dengan ukuran gambar
+                        loadPanel.add(image1Label);
+                
+                        loadFrame.add(loadPanel);
+                        // loadFrame.setVisible(true);
+
+                        // System.out.print("Select: ");
+                        // int plh2 = scanner.nextInt();
+
+                        
+                    }
+
+                    myReader.close();
+                } catch (FileNotFoundException er) {
+                    System.out.println("Save data not found");
+                }
+        
+                // // Membuat dan menambahkan JLabel dengan teks "Users"
+                // JLabel user1 = new JLabel("User1");
+                // user1.setFont(retro); // Menggunakan font retro
+                // user1.setForeground(new Color(105, 52, 8)); // Menyesuaikan warna teks jika diperlukan
+                // user1.setOpaque(true);
+                // user1.setBackground(Color.BLACK);
+                // user1.setBounds(35, 70, 300, 30); // Menyesuaikan posisi dan ukuran Title
+                // loadPanel.add(user1);
+
+                // // Menambahkan MouseListener ke label
+                // user1.addMouseListener(new MouseAdapter() {
+                //     @Override
+                //     public void mouseEntered(MouseEvent e) {
+                //         user1.setBackground(Color.GRAY); // Warna saat di-hover
+                //     }
+
+                //     @Override
+                //     public void mouseExited(MouseEvent e) {
+                //         user1.setBackground(Color.BLACK); // Warna saat tidak di-hover
+                //     }
+                // });
         
                 // Menambahkan gambar ke frame baru
                 ImageIcon imageIcon1 = new ImageIcon("Aset/load_wood.png");
                 JLabel image1Label = new JLabel(imageIcon1);
                 image1Label.setBounds(0, 0, 390, 470); // Menyesuaikan ukuran label dengan ukuran gambar
                 loadPanel.add(image1Label);
-        
-                // Membuat dan menambahkan JLabel dengan teks "Users"
-                JLabel usersLabel = new JLabel("Users");
-                usersLabel.setFont(retro); // Menggunakan font retro
-                usersLabel.setForeground(Color.WHITE); // Menyesuaikan warna teks jika diperlukan
-                usersLabel.setBounds(150, 10, 100, 30); // Menyesuaikan posisi dan ukuran label
-                loadPanel.add(usersLabel);
         
                 loadFrame.add(loadPanel);
                 loadFrame.setVisible(true);
